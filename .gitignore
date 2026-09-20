@@ -27,6 +27,10 @@ Thumbs.db
 
 # Local Scratch & User-specific logs/data
 scratch/
+voice_profiles.json
+templates/voice_profiles.json
+templates/voice.md
 .claude/linkedin/voice.md
+.claude/linkedin/voice_profiles.json
 .claude/linkedin/log.md
 .claude/linkedin/plan.md

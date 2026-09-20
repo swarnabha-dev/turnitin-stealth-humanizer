@@ -358,13 +358,33 @@ DEFAULT_VOICE_PROFILES = {
 }
 
 
+def load_voice_md():
+    """Load user's personal voice.md profile if available."""
+    search_paths = [
+        os.path.join(os.path.dirname(HERE), "templates", "voice.md"),
+        os.path.join(os.path.dirname(os.path.dirname(HERE)), "templates", "voice.md"),
+        os.path.expanduser("~/.claude/linkedin/voice.md"),
+        os.path.join(HERE, "voice.md"),
+    ]
+    for p in search_paths:
+        if os.path.isfile(p):
+            try:
+                with open(p, "r", encoding="utf-8-sig") as f:
+                    content = f.read().strip()
+                    if content and not content.startswith("# voice.md Template"):
+                        return content
+            except Exception:
+                pass
+    return ""
+
+
 def load_voice_profiles():
     """Load voice profiles from user config or template file if available, falling back to defaults."""
     search_paths = [
-        os.path.expanduser("~/.claude/linkedin/voice_profiles.json"),
-        os.path.join(HERE, "voice_profiles.json"),
         os.path.join(os.path.dirname(HERE), "templates", "voice_profiles.json"),
         os.path.join(os.path.dirname(os.path.dirname(HERE)), "templates", "voice_profiles.json"),
+        os.path.expanduser("~/.claude/linkedin/voice_profiles.json"),
+        os.path.join(HERE, "voice_profiles.json"),
     ]
     for p in search_paths:
         if os.path.isfile(p):
@@ -384,13 +404,17 @@ VOICE_PROFILES = load_voice_profiles()
 
 
 def generate_stealth_prompt(text, tone="story"):
-    profile = VOICE_PROFILES.get(tone, VOICE_PROFILES["story"])
+    profiles = load_voice_profiles()
+    profile = profiles.get(tone, profiles.get("story", DEFAULT_VOICE_PROFILES["story"]))
+    voice_md_content = load_voice_md()
+    voice_md_block = f"\n[PERSONAL VOICE PROFILE (voice.md)]\n{voice_md_content}\n" if voice_md_content else ""
+
     prompt = f"""[ROLE & GOAL]
 You are an expert human writer and domain practitioner. Rewrite the provided draft in the '{profile['label']}' style so that it reads with authentic human voice and easily passes Turnitin and neural AI detectors with a 95%+ Human score.
 
 [VOICE PROFILE: {profile['label'].upper()}]
 {profile['instructions']}
-
+{voice_md_block}
 [ANTI-DETECTION HEURISTICS (MANDATORY)]
 1. STORYTELLING & CADENCE:
    - Mix natural sentence lengths. Explanations should breathe naturally without artificial 2-word staccato chops.
@@ -426,12 +450,19 @@ def neural_rewrite(text, model=DEFAULT_NEURAL_MODEL, tone="story", temperature=0
     if not hf_token:
         return None, "No HF_TOKEN found in env or .env"
 
-    profile = VOICE_PROFILES.get(tone, VOICE_PROFILES["story"])
+    profiles = load_voice_profiles()
+    profile = profiles.get(tone, profiles.get("story", DEFAULT_VOICE_PROFILES["story"]))
+    voice_md_content = load_voice_md()
+
+    voice_guidance = ""
+    if voice_md_content:
+        voice_guidance = f"\n\nUSER PERSONAL VOICE GUIDANCE (from templates/voice.md):\n{voice_md_content}\n"
 
     system_prompt = (
         f"You are an authentic, highly skilled domain writer. Rewrite the provided draft into an engaging, "
         f"authentically human LinkedIn post in the '{profile['label']}' style.\n\n"
-        f"{profile['instructions']}\n\n"
+        f"{profile['instructions']}"
+        f"{voice_guidance}\n\n"
         f"CORE WRITING PRINCIPLES (MANDATORY):\n"
         f"1. PRESERVE ACCURACY: Keep all technical entities, speaker names, institutions, mathematical terms, and theorems completely accurate.\n"
         f"2. NATURAL CADENCE & ENTROPY: Write with genuine rhythm. Mix short and long clauses naturally. Do NOT force mechanical 2-word staccato lines or formulaic copywriting templates.\n"
@@ -585,6 +616,8 @@ def main():
                 fh.write(prompt)
             print(f"wrote stealth prompt to {args.out}", file=sys.stderr)
         else:
+            if hasattr(sys.stdout, "reconfigure"):
+                sys.stdout.reconfigure(encoding="utf-8", errors="replace")
             sys.stdout.write(prompt)
         return
 
