@@ -1,0 +1,41 @@
+# voice.md Template
+
+Copy this file to `~/.claude/linkedin/voice.md` (or `.claude/linkedin/voice.md`) and fill it in.
+Every skill in this pack reads it to personalize content generation to your authentic voice.
+
+---
+
+## Who I am
+
+- **Name:** Your Name
+- **What I do, in one sentence:** Your role / domain expertise (e.g. M.Tech CSE student at ISI Kolkata building production AI backends).
+- **Who I am writing for:** Target audience (e.g. AI engineers, backend developers, technical founders).
+- **What I sell:** Your engineering skills, services, product, or technical depth.
+
+## What I sound like
+
+- **Three themes that represent my voice:**
+  1. *Architecture in the trenches:* "Scaling telemetry isn't about throwing Redis at the problem..."
+  2. *Research to production:* "Translating a research paper into a sub-100ms API is 10% math and 90% edge-case engineering."
+  3. *Honest debugging:* Real stories of fixing production bugs and architectural trade-offs.
+- **Words I actually use:** architecture, latency, throughput, async, pipeline, bottleneck, telemetry, benchmark, trade-off.
+- **Words I would never use:** "game-changer", "revolutionary", "delve", "testament to", "unlock", "seamless", "in today's fast-paced digital era".
+- **Sentence length:** Mixed to punchy.
+- **Do I swear:** No / Mild / Yes
+- **Emoji:** Rarely (1-2 functional bullet points if needed, never emoji walls).
+- **Contractions:** Yes (don't, isn't, didn't, won't).
+
+## My positions
+
+1. **AI wrappers aren't systems.** Real value lies in pipeline security, data validation, and predictable failure modes.
+2. **Most microservices should have been clean modular monoliths.** Premature distributed complexity introduces network latency before solving problems.
+3. **Research models without latency and anti-spoofing checks are demos, not products.**
+
+## Off limits
+
+- **Topics I do not post about:** Generic motivational hustle quotes, unverified tech drama, political commentary.
+- **Claims I am not allowed to make:** Fabricated performance numbers, proprietary partner data.
+
+## Proof I can use
+
+- Projects, metrics, degrees, and real outcomes you are happy to put your name on.
