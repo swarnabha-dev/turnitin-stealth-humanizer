@@ -214,7 +214,9 @@ def words(text):
 def query_hf_router(text, model, token):
     """Query Hugging Face Router endpoint."""
     api_url = f"{ROUTER_ENDPOINT}{model}"
-    payload = json.dumps({"inputs": text[:1500]}).encode("utf-8")
+    # Truncate to ~150 words or 900 chars to stay safely within RoBERTa's 512 token embedding limit
+    safe_text = " ".join(text.split()[:160]) if len(text.split()) > 160 else text[:900]
+    payload = json.dumps({"inputs": safe_text}).encode("utf-8")
     req = urllib.request.Request(
         api_url,
         data=payload,
@@ -320,24 +322,38 @@ def run_turnitin_sliding_window(text, token=None, model=DEFAULT_LARGE_MODEL):
     sentence_analyses = [None] * len(sentences)
     flagged_indices = set()
 
-    # Pre-calculate local window text and words
+    # Pre-calculate local window text, words, and base stealth scores
     windows = []
+    base_scores = []
     for i, sent in enumerate(sentences):
         sent_words = len(sent.split())
         start_idx = max(0, i - 1)
         end_idx = min(len(sentences), i + 2)
         window_text = " ".join(sentences[start_idx:end_idx])
-        windows.append((i, sent, sent_words, window_text))
-
-    def evaluate_window(item):
-        i, sent, sent_words, window_text = item
         s_res = stealth_analyze_sentence(sent)
         base_ai_prob = (100.0 - s_res["score"]) / 100.0
+        windows.append((i, sent, sent_words, window_text, base_ai_prob))
+        base_scores.append(base_ai_prob)
 
+    # Determine which windows to query via Cloud RoBERTa Large
+    # To prevent rate-limiting/timeouts on large documents, cap neural calls to top 15 candidates
+    query_indices = set()
+    if hf_token:
+        if len(sentences) <= 15:
+            query_indices = set(range(len(sentences)))
+        else:
+            candidates = sorted(
+                [i for i, prob in enumerate(base_scores) if prob >= 0.30],
+                key=lambda idx: base_scores[idx],
+                reverse=True
+            )
+            query_indices = set(candidates[:15])
+
+    def evaluate_window(item):
+        i, sent, sent_words, window_text, base_ai_prob = item
         ai_prob = base_ai_prob
-        # Only query cloud neural for windows with potential ambiguity or elevated signals,
-        # or evaluate with RoBERTa Large in parallel
-        if hf_token and (base_ai_prob >= 0.35 or len(sentences) <= 12):
+
+        if i in query_indices and hf_token:
             try:
                 score, _ = query_hf_router(window_text, model, hf_token)
                 ai_prob = (100.0 - score) / 100.0
@@ -353,7 +369,7 @@ def run_turnitin_sliding_window(text, token=None, model=DEFAULT_LARGE_MODEL):
         }
 
     from concurrent.futures import ThreadPoolExecutor
-    with ThreadPoolExecutor(max_workers=6) as executor:
+    with ThreadPoolExecutor(max_workers=5) as executor:
         for idx, res in executor.map(evaluate_window, windows):
             sentence_analyses[idx] = res
 
