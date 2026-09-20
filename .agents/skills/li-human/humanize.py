@@ -292,7 +292,7 @@ def scan_structures_and_rhythm(text, lex):
     return flags
 
 
-VOICE_PROFILES = {
+DEFAULT_VOICE_PROFILES = {
     "story": {
         "label": "Reflective Narrative / Insight",
         "instructions": (
@@ -339,16 +339,16 @@ VOICE_PROFILES = {
         )
     },
     "linkedin": {
-        "label": "Personalized LinkedIn Thought Leadership (ISI Kolkata / Systems Engineer)",
+        "label": "Personalized LinkedIn Thought Leadership",
         "instructions": (
-            "VOICE & PERSPECTIVE: Swarnabha Halder (M.Tech CSE at ISI Kolkata) — systems builder, AI engineer, and distributed backend practitioner.\n"
+            "VOICE & PERSPECTIVE: Domain practitioner and systems builder.\n"
             "- TONE: High technical signal, sharp, engaging, and unpretentious ('architecture in the trenches' meets rigorous research).\n"
             "- LINKEDIN FORMATTING RULES (MANDATORY FOR HIGH ENGAGEMENT & DWELL TIME):\n"
             "  * Line 1 (The Hook): Standalone bold line (<130 chars) that stops the feed scroll.\n"
             "  * Line 2: Immediate payoff to Line 1 that earns the 'see more' click before mobile truncation.\n"
             "  * Pacing: Short, breathable paragraphs (1-3 lines each) with generous white space. No walls of text.\n"
             "  * Length: Snappy and punchy (180-230 words / 1,050-1,300 chars).\n"
-            "  * Personal Statement: Connect theoretical ideas from ISI Kolkata directly to real engineering reality (distributed consensus, FLP impossibility, production deadlocks).\n"
+            "  * Personal Statement: Connect theoretical ideas directly to real engineering reality (distributed consensus, FLP impossibility, production deadlocks).\n"
             "  * Not Boring / Not Aggressive: Assertive and insightful without sounding like a textbook or a toxic tech-bro.\n"
             "  * Closer: One thoughtful, high-signal question that technical peers, architects, and founders want to answer.\n"
             "  * Hashtags: 3-4 targeted, high-relevance hashtags at the end.\n"
@@ -356,6 +356,31 @@ VOICE_PROFILES = {
         )
     }
 }
+
+
+def load_voice_profiles():
+    """Load voice profiles from user config or template file if available, falling back to defaults."""
+    search_paths = [
+        os.path.expanduser("~/.claude/linkedin/voice_profiles.json"),
+        os.path.join(HERE, "voice_profiles.json"),
+        os.path.join(os.path.dirname(HERE), "templates", "voice_profiles.json"),
+        os.path.join(os.path.dirname(os.path.dirname(HERE)), "templates", "voice_profiles.json"),
+    ]
+    for p in search_paths:
+        if os.path.isfile(p):
+            try:
+                with open(p, "r", encoding="utf-8") as f:
+                    user_profiles = json.load(f)
+                    if isinstance(user_profiles, dict):
+                        merged = DEFAULT_VOICE_PROFILES.copy()
+                        merged.update(user_profiles)
+                        return merged
+            except Exception:
+                pass
+    return DEFAULT_VOICE_PROFILES
+
+
+VOICE_PROFILES = load_voice_profiles()
 
 
 def generate_stealth_prompt(text, tone="story"):

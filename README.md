@@ -35,14 +35,18 @@ git clone https://github.com/swarnabha-dev/turnitin-stealth-humanizer.git
 cd turnitin-stealth-humanizer
 ```
 
-### 2. Configure Environment & Voice
+### 2. Configure Environment, Voice & Profiles
 ```bash
-# Copy template files
+# Copy environment and voice templates
 cp .env.template .env
 cp templates/voice.md.template templates/voice.md
+cp templates/voice_profiles.json.template templates/voice_profiles.json
 
-# Add your Hugging Face API Token into .env for 0% CPU cloud neural inference:
-# HF_TOKEN=hf_...
+# Instructions for setup:
+# 1. Add your Hugging Face API Token into .env for 0% CPU cloud neural inference:
+#    HF_TOKEN=hf_...
+# 2. Edit templates/voice.md to specify your identity, target audience, and key positions.
+# 3. (Optional) Edit templates/voice_profiles.json to customize tone instructions or add custom profiles.
 ```
 
 ---

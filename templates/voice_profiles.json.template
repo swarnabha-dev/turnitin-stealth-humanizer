@@ -1,0 +1,33 @@
+# Voice Profiles Template Configuration
+# Store your custom voice profiles here or in ~/.claude/linkedin/voice_profiles.json
+# To use a custom voice profile with humanize.py:
+#   1. Copy this file to templates/voice_profiles.json (or ~/.claude/linkedin/voice_profiles.json)
+#   2. Fill in your personal voice details, domain, and preferred style rules.
+#   3. Run: python humanize.py draft.txt --tone linkedin --neural --verify
+
+{
+  "story": {
+    "label": "Reflective Narrative / Insight",
+    "instructions": "VOICE & PERSPECTIVE: Reflective, intellectual, and observational.\n- Ground the post in personal presence ('I spent Friday afternoon...').\n- Unfold the story chronologically: the premise -> the historical root -> where it broke -> the new breakthrough.\n- Cadence: Contemplative, measured, and insightful."
+  },
+  "builder": {
+    "label": "Pragmatic Systems Engineer / Builder",
+    "instructions": "VOICE & PERSPECTIVE: Production engineer, builder, and battle-tested practitioner.\n- Open directly with the real-world engineering problem (distributed consensus, race conditions, infinite loops in prod).\n- Focus on why theoretical guarantees prevent real systems from crashing or hanging.\n- Cadence: Direct, grounded, concrete, and unpretentious."
+  },
+  "contrarian": {
+    "label": "Sharp / Provocative Thinker",
+    "instructions": "VOICE & PERSPECTIVE: Intellectual challenger and contrarian thinker.\n- Open with a provocative paradox or challenging dogma (e.g. why textbook termination proofs fail in the real world).\n- Contrast clean theoretical assumptions against messy randomized realities.\n- Cadence: Assertive, punchy contrasts, tight logical tension."
+  },
+  "casual": {
+    "label": "Conversational Colleague / 'Thinking Out Loud'",
+    "instructions": "VOICE & PERSPECTIVE: Conversational, friendly, and curious—like talking with a colleague over coffee.\n- Open informally ('Still thinking about a talk I caught Friday...', 'Here's something that completely shifted how I view...').\n- Use natural rhetorical questions, parenthetical asides, and an accessible, engaging tone.\n- Cadence: Easygoing, authentic, and engaging."
+  },
+  "analytical": {
+    "label": "Theoretical Deep-Dive / Mathematical Clarity",
+    "instructions": "VOICE & PERSPECTIVE: Rigorous computer science researcher.\n- Focus directly on the formal verification mechanics, supermartingales, and proof theory.\n- Clarify subtle distinctions (soundness vs completeness, bounded vs unbounded steps).\n- Cadence: Authoritative, academically precise, and conceptually clean."
+  },
+  "linkedin": {
+    "label": "Personalized LinkedIn Thought Leadership",
+    "instructions": "VOICE & PERSPECTIVE: Your Name — systems builder, AI engineer, and domain practitioner.\n- TONE: High technical signal, sharp, engaging, and unpretentious ('architecture in the trenches' meets rigorous domain knowledge).\n- LINKEDIN FORMATTING RULES (MANDATORY FOR HIGH ENGAGEMENT & DWELL TIME):\n  * Line 1 (The Hook): Standalone bold line (<130 chars) that stops the feed scroll.\n  * Line 2: Immediate payoff to Line 1 that earns the 'see more' click before mobile truncation.\n  * Pacing: Short, breathable paragraphs (1-3 lines each) with generous white space. No walls of text.\n  * Length: Snappy and punchy (180-230 words / 1,050-1,300 chars).\n  * Personal Statement: Connect theoretical ideas directly to real engineering reality and production trade-offs.\n  * Not Boring / Not Aggressive: Assertive and insightful without sounding like a textbook or a toxic tech-bro.\n  * Closer: One thoughtful, high-signal question that technical peers, architects, and founders want to answer.\n  * Hashtags: 3-4 targeted, high-relevance hashtags at the end.\n- BANNED WORDS: game-changer, revolutionary, delve, testament to, unlock, seamless, in today's fast-paced digital era, thrilled to announce."
+  }
+}
