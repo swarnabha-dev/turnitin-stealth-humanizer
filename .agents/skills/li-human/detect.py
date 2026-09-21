@@ -39,6 +39,11 @@ import unicodedata
 import urllib.request
 import urllib.error
 
+if hasattr(sys.stdout, "reconfigure"):
+    sys.stdout.reconfigure(encoding="utf-8", errors="replace")
+if hasattr(sys.stderr, "reconfigure"):
+    sys.stderr.reconfigure(encoding="utf-8", errors="replace")
+
 HERE = os.path.dirname(os.path.abspath(__file__))
 LEX = os.path.join(HERE, "slop.json")
 ROUTER_ENDPOINT = "https://router.huggingface.co/hf-inference/models/"
@@ -56,11 +61,11 @@ ABBREVIATIONS = {
     "vol", "dept", "est", "approx", "al", "fig", "no", "phd", "msc", "bsc", "btech", "mtech"
 }
 
-WORD_RE = re.compile(r"[A-Za-z']+")
+WORD_RE = re.compile(r"[\w\u0980-\u09FF']+", re.UNICODE)
 CONTRACTIONS = re.compile(r"\b\w+'(?:s|t|re|ve|ll|d|m)\b", re.IGNORECASE)
 PRONOUNS = re.compile(r"\b(i|me|my|mine|we|us|our|you|your)\b", re.IGNORECASE)
-NUMBERS = re.compile(r"\b\d[\d,.]*%?\b|\$\d|€\d|£\d|₹\d")
-PROPER = re.compile(r"(?<![.!?]\s)(?<!^)\b[A-Z][a-z]{2,}\b", re.MULTILINE)
+NUMBERS = re.compile(r"\b\d[\d,.]*%?\b|[\u09E6-\u09EF]+|\$\d|€\d|£\d|₹\d")
+PROPER = re.compile(r"(?<![.!?।॥]\s)(?<!^)\b[A-Z\u0980-\u09FF][a-z\u0980-\u09FF]{2,}\b", re.MULTILINE)
 
 # ANSI Colors for Turnitin Highlighting
 CYAN_BG = "\033[46m\033[30m"
@@ -191,7 +196,7 @@ def split_sentences(text):
     processed = re.sub(r"\b([A-Za-z]{1,6})\.(?=\s+[A-Za-z0-9])", protect_abbr, processed)
     processed = re.sub(r"\b([A-Z])\.(?=\s+[A-Z])", r"\1__DOT__", processed)
 
-    raw_chunks = re.split(r"(?<=[.!?])\s+(?=[A-Z0-9\"'\(\[])|(?<=[.!?])\n+|\n\s*\n", processed)
+    raw_chunks = re.split(r"(?<=[.!?।॥])\s+(?=[A-Z0-9\"'\(\[\u0980-\u09FF])|(?<=[.!?।॥])\n+|\n\s*\n", processed)
 
     sentences = []
     for chunk in raw_chunks:
@@ -214,8 +219,12 @@ def words(text):
 def query_hf_router(text, model, token):
     """Query Hugging Face Router endpoint."""
     api_url = f"{ROUTER_ENDPOINT}{model}"
-    # Truncate to ~150 words or 900 chars to stay safely within RoBERTa's 512 token embedding limit
-    safe_text = " ".join(text.split()[:160]) if len(text.split()) > 160 else text[:900]
+    # Calculate byte-safe length to stay safely within RoBERTa's 512 token embedding limit
+    # Non-ASCII/multilingual UTF-8 characters (e.g. Bengali, Hindi) decompose into multiple byte tokens
+    if any(ord(c) > 127 for c in text):
+        safe_text = text[:220]
+    else:
+        safe_text = " ".join(text.split()[:140]) if len(text.split()) > 140 else text[:800]
     payload = json.dumps({"inputs": safe_text}).encode("utf-8")
     req = urllib.request.Request(
         api_url,
