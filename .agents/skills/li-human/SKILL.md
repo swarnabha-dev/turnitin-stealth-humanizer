@@ -19,6 +19,12 @@ python humanize.py draft.txt --report
 # Neural rewrite via Qwen-72B and immediately verify Turnitin AI score
 python humanize.py draft.txt --neural --verify
 
+# Tone specific neural rewrite (e.g. story, builder, contrarian, casual, analytical, linkedin)
+python humanize.py draft.txt --tone builder --verify
+
+# Force local heuristic pipeline only, verify Turnitin score
+python humanize.py draft.txt --local --verify
+
 # Score draft using Turnitin Sliding-Window & Visual Cyan Highlighting
 python detect.py draft.txt --turnitin
 
@@ -31,6 +37,24 @@ python detect.py draft.txt --no-neural
 # Compare before/after delta
 python detect.py before.txt after.txt
 ```
+
+### `humanize.py` CLI Arguments
+- `--local`: force local heuristic pipeline only (no LLM call)
+- `--neural`: use Qwen-72B neural rewrite (default: auto if HF_TOKEN present)
+- `--tone {story,builder,contrarian,casual,analytical,linkedin}`: Voice archetype (default: story)
+- `--verify`: automatically run detect.py on output to show Turnitin score
+- `--report`: print what changed, to stderr
+- `--out OUT`: write cleaned text here instead of stdout
+- `--temp TEMP`: Sampling temperature for neural rewrite (default: 0.82)
+- `--json`: emit {text, report} as JSON
+
+### `detect.py` CLI Arguments
+- `--json`: emit output as JSON
+- `--no-neural`: disable neural classification (useful for offline mode)
+- `--no-stealth`: disable StealthHumanizer 12-metric engine
+- `--no-turnitin`: disable Turnitin sliding window
+- `--turnitin`: explicitly enable Turnitin sliding window simulation (default: on)
+- `--model MODEL`: Hugging Face model ID (default: openai-community/roberta-large-openai-detector)
 
 ---
 
