@@ -16,7 +16,7 @@ posted it.
 
 ## Before you write
 
-1. Read `~/.claude/linkedin/voice.md` if it exists. That file is the user's
+1. Read `templates/voice.md` if it exists. That file is the user's
    voice profile: how they talk, what they never say, who they are talking to.
    If it does not exist, ask for **three of their own past posts**, infer the
    voice from those, and write the file. Do not skip this and do not invent a
@@ -71,7 +71,7 @@ Reply "yes" to log it, or tell me what to change.
 ```
 
 **5. Never publish.** This skill produces text. The user posts it. On "yes",
-append the post to `~/.claude/linkedin/log.md` with the date, the hook used
+append the post to `logs/linkedin_log.md` with the date, the hook used
 and the first line, so `/li-audit` has a history to work from later.
 
 ## Rules that make the difference
@@ -81,8 +81,7 @@ and the first line, so `/li-audit` has a history to work from later.
   given you a number, ask for one rather than writing around the hole.
 - **No engagement bait.** "Thoughts?" and "Agree?" are dead. The closing
   question has to be one only this post could ask.
-- **Three hashtags maximum**, at the bottom, and only if they are real
-  categories someone follows.
+- **Always include exactly three relevant hashtags**, at the very bottom. These must be highly relevant to the technical content and voice (e.g., #SystemDesign, #BackendEngineering).
 - **No links in the post body.** LinkedIn suppresses posts with outbound
   links. Put the link in the first comment and say so in the receipt.
 - **Never fabricate.** No invented metrics, clients, revenue figures or

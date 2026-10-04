@@ -351,7 +351,7 @@ DEFAULT_VOICE_PROFILES = {
             "  * Personal Statement: Connect theoretical ideas directly to real engineering reality (distributed consensus, FLP impossibility, production deadlocks).\n"
             "  * Not Boring / Not Aggressive: Assertive and insightful without sounding like a textbook or a toxic tech-bro.\n"
             "  * Closer: One thoughtful, high-signal question that technical peers, architects, and founders want to answer.\n"
-            "  * Hashtags: 3-4 targeted, high-relevance hashtags at the end.\n"
+            "  * Hashtags: EXACTLY 3 highly relevant technical hashtags at the very bottom. DO NOT skip this.\n"
             "- BANNED WORDS: game-changer, revolutionary, delve, testament to, unlock, seamless, in today's fast-paced digital era, thrilled to announce."
         )
     }

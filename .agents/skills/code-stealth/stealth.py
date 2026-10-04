@@ -105,8 +105,8 @@ def evaluate_code(file_path):
     try:
         tree = ast.parse(source)
     except SyntaxError as e:
-        print(f"Syntax Error: Cannot parse AST. {e}")
-        return
+        print(f"Syntax Error: Cannot parse AST. {e}", file=sys.stderr)
+        sys.exit(1)
 
     evaluator = CodeEvaluator()
     evaluator.visit(tree)
